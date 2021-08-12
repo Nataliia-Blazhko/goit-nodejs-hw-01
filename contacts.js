@@ -3,25 +3,33 @@ const path = require("path");
 const contactsPath = path.resolve("./db", "contacts.json");
 console.log(contactsPath);
 
-function listContacts() {
-  fs.readFile(contactsPath, "utf8").then((data) => {
-    console.table(JSON.parse(data.toString()));
-  });
+async function listContacts() {
+  await fs
+    .readFile(contactsPath, "utf8")
+    .then((data) => {
+      console.table(JSON.parse(data.toString()));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 // listContacts();
 
-function getContactById(contactId) {
-  fs.readFile(contactsPath, "utf8").then((data) => {
-    console.table(
-      JSON.parse(data.toString()).filter((contact) => contact.id === contactId)
-    );
-  });
+async function getContactById(contactId) {
+  try {
+    const data = await fs.readFile(contactsPath, "utf8");
+    const parsedData = JSON.parse(data.toString());
+    console.table(parsedData.find((contact) => contact.id === contactId));
+  } catch (error) {
+    console.log(error);
+  }
 }
-// getContactById(6);
+// getContactById(2);
 
-function removeContact(contactId) {
-  fs.readFile(contactsPath, "utf8")
+async function removeContact(contactId) {
+  await fs
+    .readFile(contactsPath, "utf8")
     .then((data) => {
       const result = JSON.parse(data.toString()).filter(
         (contact) => contact.id !== contactId
@@ -33,11 +41,12 @@ function removeContact(contactId) {
       console.log(error);
     });
 }
-removeContact(1);
+removeContact(6);
 
 function addContact(name, email, phone) {
   fs.readFile(contactsPath, "utf8").then((data) => {
     const result = JSON.parse(data.toString()).push({ name, email, phone });
+    fs.writeFile(contactsPath, JSON.stringify(result));
     console.table(result);
   });
 }
