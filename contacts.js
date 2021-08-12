@@ -4,56 +4,63 @@ const contactsPath = path.resolve("./db", "contacts.json");
 console.log(contactsPath);
 
 async function listContacts() {
-  await fs
-    .readFile(contactsPath, "utf8")
-    .then((data) => {
-      console.table(JSON.parse(data.toString()));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  try {
+    const data = await fs.readFile(contactsPath);
+    const parsedData = JSON.parse(data);
+    console.table(parsedData);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // listContacts();
 
 async function getContactById(contactId) {
   try {
-    const data = await fs.readFile(contactsPath, "utf8");
-    const parsedData = JSON.parse(data.toString());
+    const data = await fs.readFile(contactsPath);
+    const parsedData = JSON.parse(data);
     console.table(parsedData.find((contact) => contact.id === contactId));
   } catch (error) {
     console.log(error);
   }
 }
-// getContactById(2);
+// getContactById();
 
 async function removeContact(contactId) {
-  await fs
-    .readFile(contactsPath, "utf8")
-    .then((data) => {
-      const result = JSON.parse(data.toString()).filter(
-        (contact) => contact.id !== contactId
-      );
-      fs.writeFile(contactsPath, JSON.stringify(result));
-      console.table(result);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-removeContact(6);
-
-function addContact(name, email, phone) {
-  fs.readFile(contactsPath, "utf8").then((data) => {
-    const result = JSON.parse(data.toString()).push({ name, email, phone });
-    fs.writeFile(contactsPath, JSON.stringify(result));
-    console.table(result);
-  });
+  try {
+    const data = await fs.readFile(contactsPath);
+    const parsedData = JSON.parse(data);
+    const filteredData = parsedData.filter(
+      (contact) => contact.id !== contactId
+    );
+    await fs.writeFile(contactsPath, JSON.stringify(filteredData));
+    console.table(filteredData);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-// addContact("gdsfjf", "dasbdgSJK", 34567890);
+// removeContact(11);
+
+async function addContact(name, email, phone) {
+  try {
+    const data = await fs.readFile(contactsPath);
+    const parsedData = JSON.parse(data);
+    const id =
+      parsedData.reduce(
+        (accum, item) => (accum > item.id ? accum : item.id),
+        0
+      ) + 1;
+    parsedData.push({ id, name, email, phone });
+    await fs.writeFile(contactsPath, JSON.stringify(parsedData));
+    console.table(parsedData);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// addContact("gdsfjf", "dasbdgSJK", "34567890");
 module.exports = {
-  contactsPath,
   listContacts,
   getContactById,
   removeContact,
