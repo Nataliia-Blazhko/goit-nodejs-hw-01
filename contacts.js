@@ -19,8 +19,7 @@ async function getContactById(contactId) {
     const parsedData = JSON.parse(data);
     const contact = parsedData.find((contact) => contact.id === contactId);
     if (!contact) {
-      console.log(`Contact with id=${contactId} not found`);
-      return;
+      throw new Error(`Contact with id=${contactId} not found`);
     }
     console.table(contact);
   } catch (error) {
@@ -32,6 +31,10 @@ async function removeContact(contactId) {
   try {
     const data = await fs.readFile(contactsPath);
     const parsedData = JSON.parse(data);
+    const contact = parsedData.find((contact) => contact.id === contactId);
+    if (!contact) {
+      throw new Error(`Contact with id=${contactId} not found`);
+    }
     const filteredData = parsedData.filter(
       (contact) => contact.id !== contactId
     );
