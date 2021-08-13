@@ -1,7 +1,7 @@
 const fs = require("fs").promises;
 const path = require("path");
 const contactsPath = path.resolve("./db", "contacts.json");
-console.log(contactsPath);
+// console.log(contactsPath);
 
 async function listContacts() {
   try {
@@ -13,18 +13,20 @@ async function listContacts() {
   }
 }
 
-// listContacts();
-
 async function getContactById(contactId) {
   try {
     const data = await fs.readFile(contactsPath);
     const parsedData = JSON.parse(data);
-    console.table(parsedData.find((contact) => contact.id === contactId));
+    const contact = parsedData.find((contact) => contact.id === contactId);
+    if (!contact) {
+      console.log(`Contact with id=${contactId} not found`);
+      return;
+    }
+    console.table(contact);
   } catch (error) {
     console.log(error);
   }
 }
-// getContactById();
 
 async function removeContact(contactId) {
   try {
@@ -39,8 +41,6 @@ async function removeContact(contactId) {
     console.log(error);
   }
 }
-
-// removeContact(11);
 
 async function addContact(name, email, phone) {
   try {
@@ -59,7 +59,6 @@ async function addContact(name, email, phone) {
   }
 }
 
-// addContact("gdsfjf", "dasbdgSJK", "34567890");
 module.exports = {
   listContacts,
   getContactById,
